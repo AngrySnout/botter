@@ -16,14 +16,14 @@ setInterval(updateServerList, 30000);
 
 function findServer(query) {
 	var candidates = fuzzaldrin.filter(serverList, query, { key: 'description', maxResults: 5 });
-	if (candidates.length == 5 || candidates.length === 0) return "\x02"+query+"\x0F";
-	return "\x02"+candidates[0].description+"\x0F ( \x0303/connect "+candidates[0].host+" "+candidates[0].port+"\x0F )";
+	if (candidates.length == 5 || candidates.length === 0) return query? ""+query+".": "";
+	return ""+candidates[0].description+": /connect "+candidates[0].host+" "+candidates[0].port+"";
 }
 
 function response(sender, params) {
 	var res = sender + " is looking for ";
 	res += params.type||"games";
-	res += (params.server)? " on "+params.server+".": ".";
+	res += (params.server)? " on "+params.server: ".";
 	return res;
 }
 
@@ -52,17 +52,17 @@ function duel(sender, args) {
 }
 
 function help() {
-	return "\x02Commands:\x0F \x0306^mix [server...]\x0F, \x0306^cw [number] [server...]\x0F,\x0306^duel [insta|effic|ffa] [server...]\x0F, \x0306^help\x0F, \x0306^about";
+	return "Commands: ^mix [server...], ^cw [number] [server...], ^duel [insta|effic|ffa] [server...], ^help, ^about";
 }
 
 function about() {
-	return "\x02\x0305botter\x0F; a bottie replacement. https://github.com/AngrySnout/botter";
+	return "botter; a bottie replacement. https://github.com/AngrySnout/botter";
 }
 
 var settings = {
 	name: "botter",
 	channels: [
-		"#sauercom"
+		"#impressivesquad"
 	],
 	commandPrefix: "^",
 	commands: {
