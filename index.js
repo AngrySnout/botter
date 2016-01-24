@@ -16,8 +16,8 @@ setInterval(updateServerList, 30000);
 
 function findServer(query) {
 	var candidates = fuzzaldrin.filter(serverList, query, { key: 'description', maxResults: 5 });
-	if (candidates.length == 5 || candidates.length === 0) return query;
-	return candidates[0].description+" ( /connect "+candidates[0].host+" "+candidates[0].port+" )";
+	if (candidates.length == 5 || candidates.length === 0) return "\x02"+query+"\x0F";
+	return "\x02"+candidates[0].description+"\x0F ( \x0303/connect "+candidates[0].host+" "+candidates[0].port+"\x0F )";
 }
 
 function response(sender, params) {
@@ -52,30 +52,29 @@ function duel(sender, args) {
 }
 
 function help() {
-	return [
-		"Commands:",
-		" ^mix [server...]",
-		" ^cw [number] [server...]",
-		" ^duel [insta|effic|ffa] [server...]",
-		" ^help"
-	].join("\n");
+	return "\x02Commands:\x0F \x0306^mix [server...]\x0F, \x0306^cw [number] [server...]\x0F,\x0306^duel [insta|effic|ffa] [server...]\x0F, \x0306^help\x0F, \x0306^about";
+}
+
+function about() {
+	return "\x02\x0305botter\x0F; a bottie replacement. https://github.com/AngrySnout/botter";
 }
 
 var settings = {
 	name: "botter",
 	channels: [
-		"#sauertracker"
+		"#sauercom"
 	],
 	commandPrefix: "^",
 	commands: {
 		"mix": mix,
 		"cw": cw,
 		"duel": duel,
-		"help": help
+		"help": help,
+		"about": about
 	}
 };
 
-var client = new irc.Client("irc.gamesurge.net", settings.name, {
+var client = new irc.Client("burstfire.uk.eu.gamesurge.net", settings.name, {
 	userName: settings.name,
     realName: settings.name,
     channels: settings.channels,
