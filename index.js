@@ -1,4 +1,24 @@
 var irc = require("irc");
+var request = require("request");
+var fuzzaldrin = require("fuzzaldrin");
+
+var serverList = [];
+
+function updateServerList() {
+	request("http://uk.cube2.org/serverlist", function (error, response, body) {
+		if (!error && response.statusCode == 200) {
+			serverList = JSON.parse(body);
+		}
+	});
+}
+updateServerList();
+setInterval(updateServerList, 30000);
+
+function findServer(query) {
+	var candidates = fuzzaldrin.filter(serverList, query, { key: 'description', maxResults: 5 });
+	if (candidates.length == 5 || candidates.length === 0) return query;
+	return candidates[0].description+" ( /connect "+candidates[0].host+" "+candidates[0].port+" )";
+}
 
 function response(sender, params) {
 	var res = sender + " is looking for ";
@@ -8,7 +28,7 @@ function response(sender, params) {
 }
 
 function mix(sender, args) {
-	return response(sender, { type: "mixed games", server: args.join(" ") });
+	return response(sender, { type: "mixed games", server: findServer(args.join(" ")) });
 }
 
 function cw(sender, args) {
@@ -18,7 +38,7 @@ function cw(sender, args) {
 		args = args.slice(1);
 		players += num+"v"+num+" ";
 	}
-	return response(sender, { type: "a "+players+"clanwar", server: args.join(" ") });
+	return response(sender, { type: "a "+players+"clanwar", server: findServer(args.join(" ")) });
 }
 
 function duel(sender, args) {
@@ -28,7 +48,7 @@ function duel(sender, args) {
 		mode = "an "+mode+" ";
 		args = args.slice(1);
 	}
-	return response(sender, { type: mode+"duel", server: args.join(" ") });
+	return response(sender, { type: mode+"duel", server: findServer(args.join(" ")) });
 }
 
 function help() {
@@ -44,7 +64,7 @@ function help() {
 var settings = {
 	name: "botter",
 	channels: [
-		"#sauertracker" // the first channel is the one listened to
+		"#sauertracker"
 	],
 	commandPrefix: "^",
 	commands: {
@@ -67,14 +87,19 @@ function splitArgs(text) {
 	return text.replace(/[\n\r]/g, "").split(" ");
 }
 
-client.addListener('message', function (from, to, message) {
+client.addListener("message", function (from, to, message) {
 	var args = message.replace(/[\n\r]/g, "").split(" ");
 	if (args[0][0] == settings.commandPrefix) {
 		var command = args[0].slice(1);
-		if (settings.commands[command]) client.say(settings.channels[0], settings.commands[command](from, args.slice(1)));
+		if (settings.commands[command]) {
+			var res = settings.commands[command](from, args.slice(1));
+			for (var chan in settings.channels) {
+				client.say(settings.channels[chan], res);
+			}
+		}
 	}
 });
 
-client.addListener('error', function(message) {
-    console.log('error: ', message);
+client.addListener("error", function(message) {
+    console.log("error: ", message);
 });
