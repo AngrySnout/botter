@@ -1,0 +1,31 @@
+{
+  "name": "botter",
+  "version": "1.0.0",
+  "description": "A bottie replacement for IRC.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "run": "node index",
+    "start": "forever --uid \"botter\" start index.js",
+    "stop": "forever stop botter"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AngrySnout/botter.git"
+  },
+  "keywords": [
+    "sauerbraten",
+    "irc",
+    "bot"
+  ],
+  "author": "AngrySnout",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AngrySnout/botter/issues"
+  },
+  "homepage": "https://github.com/AngrySnout/botter#readme",
+  "dependencies": {
+    "forever": "^0.15.1",
+    "irc": "^0.4.0"
+  }
+}
