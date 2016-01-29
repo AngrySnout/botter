@@ -52,19 +52,14 @@ client = new irc.Client "burstfire.uk.eu.gamesurge.net", name,
     autoRejoin: true
     floodProtection: true
 
-splitArgs = (text) ->
-    text.replace(/[\n\r]/g, "").split(" ")
-
 client.addListener 'message', (from, to, message) ->
-    args = splitArgs message
-    if args[0][0] == prefix
-        command = args[0].slice 1
-        if commands[command]
-            [res, announce] = commands[command](from, args.slice 1)
-            if announce
-                client.say chan, res for chan in channels
-            else
-                client.send "notice", from, res
+    args = message.replace(/[\n\r]/g, "").split(" ")
+    if args[0][0] == prefix && (command = args[0].slice(1)) of commands
+        [res, announce] = commands[command](from, args.slice 1)
+        if announce
+            client.say chan, res for chan in channels
+        else
+            client.send "notice", from, res
 
 client.addListener "error", (message) ->
     console.log "error: ", message

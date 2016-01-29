@@ -1,4 +1,4 @@
-var channels, client, commands, findServer, fuzzaldrin, irc, name, prefix, request, response, serverList, splitArgs, updateServerList;
+var channels, client, commands, findServer, fuzzaldrin, irc, name, prefix, request, response, serverList, updateServerList;
 
 require("source-map-support").install();
 
@@ -86,27 +86,20 @@ client = new irc.Client("burstfire.uk.eu.gamesurge.net", name, {
   floodProtection: true
 });
 
-splitArgs = function(text) {
-  return text.replace(/[\n\r]/g, "").split(" ");
-};
-
 client.addListener('message', function(from, to, message) {
   var announce, args, chan, command, i, len, ref, res, results;
-  args = splitArgs(message);
-  if (args[0][0] === prefix) {
-    command = args[0].slice(1);
-    if (commands[command]) {
-      ref = commands[command](from, args.slice(1)), res = ref[0], announce = ref[1];
-      if (announce) {
-        results = [];
-        for (i = 0, len = channels.length; i < len; i++) {
-          chan = channels[i];
-          results.push(client.say(chan, res));
-        }
-        return results;
-      } else {
-        return client.send("notice", from, res);
+  args = message.replace(/[\n\r]/g, "").split(" ");
+  if (args[0][0] === prefix && (command = args[0].slice(1)) in commands) {
+    ref = commands[command](from, args.slice(1)), res = ref[0], announce = ref[1];
+    if (announce) {
+      results = [];
+      for (i = 0, len = channels.length; i < len; i++) {
+        chan = channels[i];
+        results.push(client.say(chan, res));
       }
+      return results;
+    } else {
+      return client.send("notice", from, res);
     }
   }
 });
