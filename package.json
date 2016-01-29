@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "run": "node index",
+    "build": "gulp build",
     "start": "forever --uid \"botter\" start index.js",
     "stop": "forever stop botter"
   },
@@ -28,6 +29,13 @@
     "forever": "^0.15.1",
     "fuzzaldrin": "^2.1.0",
     "irc": "^0.4.0",
-    "request": "^2.67.0"
+    "request": "^2.67.0",
+    "source-map-support": "^0.4.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-coffee": "^2.3.1",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-util": "^3.0.7"
   }
 }
